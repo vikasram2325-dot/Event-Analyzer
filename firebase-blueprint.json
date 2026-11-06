@@ -1,0 +1,122 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 120 },
+        "displayName": { "type": "string", "maxLength": 120 },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "createdAt": { "type": "string" },
+        "photoURL": { "type": "string", "maxLength": 1000 }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "System administrator mapping for secure RBAC",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "maxLength": 120 },
+        "role": { "type": "string", "enum": ["admin"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["email", "role"]
+    },
+    "Event": {
+      "title": "Event",
+      "description": "Public and managed event document",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "minLength": 3, "maxLength": 120 },
+        "description": { "type": "string", "minLength": 10, "maxLength": 4000 },
+        "imageUrl": { "type": "string", "maxLength": 1000 },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Technology",
+            "Business",
+            "Design & Creative",
+            "Music & Entertainment",
+            "Workshops & Training",
+            "Health & Wellness",
+            "Sports & Fitness",
+            "Community & Networking"
+          ]
+        },
+        "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "time": { "type": "string", "maxLength": 20 },
+        "venue": { "type": "string", "minLength": 2, "maxLength": 200 },
+        "location": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "organizerName": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "organizerId": { "type": "string", "maxLength": 128 },
+        "maxParticipants": { "type": "number" },
+        "registeredCount": { "type": "number" },
+        "status": { "type": "string", "enum": ["published", "draft", "completed", "cancelled"] },
+        "price": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": [
+        "title",
+        "description",
+        "category",
+        "date",
+        "time",
+        "venue",
+        "location",
+        "organizerName",
+        "maxParticipants",
+        "registeredCount",
+        "status"
+      ]
+    },
+    "Registration": {
+      "title": "Registration",
+      "description": "Event booking registration record",
+      "type": "object",
+      "properties": {
+        "eventId": { "type": "string", "maxLength": 128 },
+        "eventTitle": { "type": "string", "maxLength": 120 },
+        "eventDate": { "type": "string", "maxLength": 50 },
+        "eventTime": { "type": "string", "maxLength": 50 },
+        "eventVenue": { "type": "string", "maxLength": 200 },
+        "eventLocation": { "type": "string", "maxLength": 100 },
+        "eventImageUrl": { "type": "string", "maxLength": 1000 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "userEmail": { "type": "string", "maxLength": 120 },
+        "userName": { "type": "string", "maxLength": 120 },
+        "userPhone": { "type": "string", "maxLength": 30 },
+        "status": { "type": "string", "enum": ["confirmed", "cancelled"] },
+        "ticketCode": { "type": "string", "maxLength": 40 },
+        "registeredAt": { "type": "string" },
+        "cancelledAt": { "type": "string" }
+      },
+      "required": ["eventId", "userId", "userEmail", "userName", "status", "ticketCode", "registeredAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "User" },
+      "description": "User profile documents"
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "Admin" },
+      "description": "Collection of administrators authorized for event management"
+    },
+    "/events/{eventId}": {
+      "schema": { "$ref": "Event" },
+      "description": "All events created by organizers/admins"
+    },
+    "/events/{eventId}/registrations/{registrationId}": {
+      "schema": { "$ref": "Registration" },
+      "description": "Registrations subcollection for an event"
+    },
+    "/registrations/{registrationId}": {
+      "schema": { "$ref": "Registration" },
+      "description": "User registration documents for fast lookups by user and event"
+    }
+  }
+}
